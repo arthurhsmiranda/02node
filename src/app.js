@@ -6,7 +6,7 @@ const {uuid}  = require('uuidv4');
 
 const app = express();
 
-/* function validateId(request, response, next) {
+ function validateId(request, response, next) {
   const {id} = request.params;
 
   if (!isUuid(id)) {
@@ -17,7 +17,7 @@ const app = express();
 
 }
 
-app.use('/repositories/:id',validateId); */
+app.use('/repositories/:id',validateId); 
 
 app.use(express.json());
 app.use(cors());
@@ -89,7 +89,7 @@ app.delete("/repositories/:id", (request, response) => {
   return response.status(204).send();
 });
 
-app.post("/repositories/:id/like", (request, response) => {
+app.post("/repositories/:id/like", validateId, (request, response) => {
   const {id} = request.params;
   const repositoryIndex = repositories.findIndex(repository => repository.id === id);
 
