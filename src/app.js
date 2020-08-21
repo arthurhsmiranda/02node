@@ -6,18 +6,7 @@ const {uuid}  = require('uuidv4');
 
 const app = express();
 
- function validateId(request, response, next) {
-  const {id} = request.params;
 
-  if (!isUuid(id)) {
-      return response.status(400).json({error:'invalid Id'});
-  }
-
-  return next();
-
-}
-
-app.use('/repositories/:id',validateId); 
 
 app.use(express.json());
 app.use(cors());
@@ -64,6 +53,7 @@ app.put("/repositories/:id", (request, response) => {
        title,
        url,
        techs,
+       likes: repositories[repositoryIndex].likes,
    };
    //ovewrite the object inside the array on that specific index
    repositories[repositoryIndex] = repository;
@@ -89,20 +79,19 @@ app.delete("/repositories/:id", (request, response) => {
   return response.status(204).send();
 });
 
-app.post("/repositories/:id/like", validateId, (request, response) => {
+app.post("/repositories/:id/like", (request, response) => {
   const {id} = request.params;
-  const repositoryIndex = repositories.findIndex(repository => repository.id === id);
+  const repository = repositories.find(repository => repository.id === id);
 
-  if (repositoryIndex < 0) {
-    return response.status(400).json({ error : "Not Found"});
+  if (!repository) {
+    return response.status(400).send();
   }
 
-    const repository = repositories[repositoryIndex];
+
     repository.likes += 1;
   
 
-    //ovewrite the object inside the array on that specific index
-    repositories[repositoryIndex] = repository;
+
 
     return response.status(200).json(
     repository
